@@ -1,3 +1,3 @@
 # ShopingList
 
-Project app of course Android proffesional Level (Kotlin). 
+Project app of course [Android proffesional Level (Kotlin)](https://stepik.org/course/117314/syllabus). 
