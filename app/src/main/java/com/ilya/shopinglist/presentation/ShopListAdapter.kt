@@ -1,20 +1,13 @@
 package com.ilya.shopinglist.presentation
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
 import com.ilya.shopinglist.R
 import com.ilya.shopinglist.domain.ShopItem
 
-class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
-
-    var shopList = listOf<ShopItem>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+class ShopListAdapter :
+    ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffUtilCallback()) {
 
     var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
@@ -29,12 +22,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         return ShopItemViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return shopList.size
-    }
-
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-        val shopItem = shopList[position]
+        val shopItem = getItem(position)
         holder.nameTv.text = shopItem.name
         holder.countTv.text = shopItem.count.toString()
         holder.view.setOnLongClickListener {
@@ -47,21 +36,18 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (shopList[position].enabled) {
+        val item = getItem(position)
+        return if (item.enabled) {
             ENABLE_STATE
         } else {
             DISABLE_STATE
         }
     }
 
-    class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val nameTv: TextView = view.findViewById(R.id.name_item_tv)
-        val countTv: TextView = view.findViewById(R.id.count_tv)
-    }
-
     companion object {
         const val ENABLE_STATE = 0
         const val DISABLE_STATE = 1
+
         const val MAX_POOL_SIZE = 20
     }
 }
