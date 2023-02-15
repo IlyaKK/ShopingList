@@ -4,18 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ilya.shopinglist.domain.ShopItem
 import com.ilya.shopinglist.domain.ShopListRepository
+import kotlin.random.Random
 
 object ShopListRepositoryImpl : ShopListRepository {
 
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({ p0, p1 -> p0.id.compareTo(p1.id) })
 
     private val shopListLiveData = MutableLiveData<List<ShopItem>>()
 
     private var autoIncrementId = 0
 
     init {
-        for (i in 0..10) {
-            val item = ShopItem("Name $i", i, true)
+        for (i in 0..100) {
+            val item = ShopItem("Name $i", i, Random.nextBoolean())
             addShopItem(item)
         }
     }
@@ -49,7 +50,7 @@ object ShopListRepositoryImpl : ShopListRepository {
         updateList()
     }
 
-    private fun updateList(){
+    private fun updateList() {
         shopListLiveData.value = shopList.toList()
     }
 }
