@@ -1,13 +1,12 @@
 package com.ilya.shopinglist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ilya.shopinglist.R
-import com.ilya.shopinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,8 +18,13 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         mainViewModel.shopList.observe(this) {
-            //Log.d("MainActivityTestList", it.joinToString("\n"))
             shopListAdapter.submitList(it)
+        }
+
+        val buttonAddItem = findViewById<FloatingActionButton>(R.id.add_item_button)
+        buttonAddItem.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -30,12 +34,10 @@ class MainActivity : AppCompatActivity() {
         with(recyclerView) {
             adapter = shopListAdapter
             recycledViewPool.setMaxRecycledViews(
-                ShopListAdapter.ENABLE_STATE,
-                ShopListAdapter.MAX_POOL_SIZE
+                ShopListAdapter.ENABLE_STATE, ShopListAdapter.MAX_POOL_SIZE
             )
             recycledViewPool.setMaxRecycledViews(
-                ShopListAdapter.DISABLE_STATE,
-                ShopListAdapter.MAX_POOL_SIZE
+                ShopListAdapter.DISABLE_STATE, ShopListAdapter.MAX_POOL_SIZE
             )
         }
         setupShopItemLongClickListener()
@@ -44,11 +46,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupShopItemDeleteSwipeCallback(recyclerView: RecyclerView) {
-        val touchCallback = object :
-            ItemTouchHelper.SimpleCallback(
-                0,
-                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-            ) {
+        val touchCallback = object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -68,7 +68,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupShopItemClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            Log.d("ShopItemDetail", it.toString())
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
