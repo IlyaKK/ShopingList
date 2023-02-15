@@ -3,6 +3,8 @@ package com.ilya.shopinglist.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -32,18 +34,84 @@ class ShopItemActivity : AppCompatActivity() {
         parseIntent()
         shopItemViewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews()
-        when(screenMode){
+        addTextChangeListeners()
+        launchRightMode()
+        observeShopItemViewModel()
+    }
+
+    private fun observeShopItemViewModel() {
+        shopItemViewModel.errorInputName.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_name)
+            } else {
+                null
+            }
+            tilName.error = message
+        }
+
+        shopItemViewModel.errorInputCount.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_count)
+            } else {
+                null
+            }
+            tilCount.error = message
+        }
+
+        shopItemViewModel.shouldCloseScreen.observe(this) {
+            finish()
+        }
+    }
+
+    private fun launchRightMode() {
+        when (screenMode) {
             MODE_EDIT -> lunchEditMode()
             MODE_ADD -> lunchAddMode()
         }
     }
 
-    private fun lunchEditMode(){
+    private fun addTextChangeListeners() {
+        etName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
 
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                shopItemViewModel.resetErrorInputName()
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+        etCount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                shopItemViewModel.resetErrorInputCount()
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+    }
+
+    private fun lunchEditMode() {
+        shopItemViewModel.getShopItem(idShopItem)
+        shopItemViewModel.shopItem.observe(this) {
+            etName.setText(it.name)
+            etCount.setText(it.count.toString())
+        }
+        buttonSave.setOnClickListener {
+            shopItemViewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
+        }
     }
 
     private fun lunchAddMode() {
-        TODO("Not yet implemented")
+        buttonSave.setOnClickListener {
+            shopItemViewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
+        }
     }
 
     private fun parseIntent() {
