@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ilya.shopinglist.R
 import com.ilya.shopinglist.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
     private var screenMode = MODE_UNKNOWN
     private var idShopItem = ShopItem.UNDEFINED_ID
 
@@ -47,6 +47,10 @@ class ShopItemActivity : AppCompatActivity() {
             }
             idShopItem = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
+    }
+
+    override fun onEditingFinished() {
+        finish()
     }
 
     companion object {
