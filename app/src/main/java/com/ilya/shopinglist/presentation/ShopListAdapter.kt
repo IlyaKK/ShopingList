@@ -2,8 +2,12 @@ package com.ilya.shopinglist.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.ilya.shopinglist.R
+import com.ilya.shopinglist.databinding.ItemShopDisableBinding
+import com.ilya.shopinglist.databinding.ItemShopEnableBinding
 import com.ilya.shopinglist.domain.ShopItem
 
 class ShopListAdapter :
@@ -18,20 +22,34 @@ class ShopListAdapter :
             DISABLE_STATE -> R.layout.item_shop_disable
             else -> throw RuntimeException("Unknown view type $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(idLayout, parent, false)
-        return ShopItemViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            idLayout,
+            parent,
+            false
+        )
+
+        return ShopItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = getItem(position)
-        holder.nameTv.text = shopItem.name
-        holder.countTv.text = shopItem.count.toString()
-        holder.view.setOnLongClickListener {
+        val binding = holder.binding
+
+        binding.root.setOnLongClickListener {
             onShopItemLongClickListener?.invoke(shopItem)
             true
         }
-        holder.view.setOnClickListener {
+        binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)
+        }
+        when (binding) {
+            is ItemShopDisableBinding -> {
+                binding.shopItem = shopItem
+            }
+            is ItemShopEnableBinding -> {
+                binding.shopItem = shopItem
+            }
         }
     }
 
