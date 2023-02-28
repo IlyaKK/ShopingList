@@ -1,56 +1,37 @@
 package com.ilya.shopinglist.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.ilya.shopinglist.domain.ShopItem
 import com.ilya.shopinglist.domain.ShopListRepository
-import kotlin.random.Random
 
-object ShopListRepositoryImpl : ShopListRepository {
+class ShopListRepositoryImpl(
+    application: Application
+) : ShopListRepository {
 
-    private val shopList = sortedSetOf<ShopItem>({ p0, p1 -> p0.id.compareTo(p1.id) })
+    private val shopListDao = AppDataBase.getInstance(application).shopListDao()
+    private val mapper = ShopListMapper()
 
-    private val shopListLiveData = MutableLiveData<List<ShopItem>>()
+    override suspend fun addShopItem(shopItem: ShopItem) {
+        shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
+    }
 
-    private var autoIncrementId = 0
+    override suspend fun editShopItem(shopItem: ShopItem) {
+        shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
+    }
 
-    init {
-        for (i in 0..100) {
-            val item = ShopItem("Name $i", i, Random.nextBoolean())
-            addShopItem(item)
+    override suspend fun getShopItem(idItem: Int): ShopItem {
+        val dbModel = shopListDao.getShopItem(idItem)
+        return mapper.mapDbModelToEntity(dbModel)
+    }
+
+    override fun getShopList(): LiveData<List<ShopItem>> =
+        Transformations.map(shopListDao.getShopList()) {
+            mapper.listDbModelToListEntity(it)
         }
-    }
 
-    override fun addShopItem(shopItem: ShopItem) {
-        if (shopItem.id == ShopItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementId++
-        }
-        shopList.add(shopItem)
-        updateList()
-    }
-
-    override fun editShopItem(shopItem: ShopItem) {
-        val oldElement = getShopItem(shopItem.id)
-        shopList.remove(oldElement)
-        addShopItem(shopItem)
-    }
-
-    override fun getShopItem(idItem: Int): ShopItem {
-        return shopList.find {
-            it.id == idItem
-        } ?: throw RuntimeException("Element with id $idItem not found")
-    }
-
-    override fun getShopList(): LiveData<List<ShopItem>> {
-        return shopListLiveData
-    }
-
-    override fun removeShopItem(shopItem: ShopItem) {
-        shopList.remove(shopItem)
-        updateList()
-    }
-
-    private fun updateList() {
-        shopListLiveData.value = shopList.toList()
+    override suspend fun removeShopItem(shopItem: ShopItem) {
+        shopListDao.deleteShopItem(shopItem.id)
     }
 }
