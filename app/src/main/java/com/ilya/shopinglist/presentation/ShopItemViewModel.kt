@@ -1,17 +1,18 @@
 package com.ilya.shopinglist.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.ilya.shopinglist.data.ShopListRepositoryImpl
 import com.ilya.shopinglist.domain.AddShopItemUseCase
 import com.ilya.shopinglist.domain.EditShopItemUseCase
 import com.ilya.shopinglist.domain.GetShopItemUseCase
 import com.ilya.shopinglist.domain.ShopItem
 
-class ShopItemViewModel : ViewModel() {
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryImpl(application)
 
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
@@ -30,7 +31,7 @@ class ShopItemViewModel : ViewModel() {
         get() = _shopItem
 
     private val _shouldCloseScreen = MutableLiveData<Unit>()
-    val shouldCloseScreen:LiveData<Unit>
+    val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
 
     fun getShopItem(idShopItem: Int) {

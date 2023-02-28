@@ -1,16 +1,16 @@
 package com.ilya.shopinglist.presentation
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.ilya.shopinglist.data.ShopListRepositoryImpl
 import com.ilya.shopinglist.domain.EditShopItemUseCase
 import com.ilya.shopinglist.domain.GetShopListUseCase
 import com.ilya.shopinglist.domain.RemoveShopItemUseCase
 import com.ilya.shopinglist.domain.ShopItem
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryImpl(application)
 
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val removeShopItemUseCase = RemoveShopItemUseCase(repository)
