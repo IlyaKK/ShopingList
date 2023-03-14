@@ -1,8 +1,9 @@
 package com.ilya.shopinglist.data
 
 import com.ilya.shopinglist.domain.ShopItem
+import javax.inject.Inject
 
-class ShopListMapper {
+class ShopListMapper @Inject constructor() {
     fun mapEntityToDbModel(shopItem: ShopItem) = ShopItemDbModel(
         id = shopItem.id,
         name = shopItem.name,
