@@ -2,7 +2,7 @@
 
 Project app of course [Android proffesional Level (Kotlin)](https://stepik.org/course/117314/info). 
 
-In this project I study Clean Architecture, Recycler View, Kotlin, Fragments, Data Binding, Room, Kotlin Coroutines.
+In this project I study Clean Architecture, Recycler View, Kotlin, Fragments, Data Binding, Room, Kotlin Coroutines, Dagger.
 
 ![Main screen](https://user-images.githubusercontent.com/43324144/219977942-2ac87f58-c143-4124-8385-25c4d08cbc68.png)
 
