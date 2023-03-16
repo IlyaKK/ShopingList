@@ -1,6 +1,8 @@
 package com.ilya.shopinglist.presentation
 
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.ilya.shopinglist.databinding.FragmentShopItemBinding
 import com.ilya.shopinglist.domain.ShopItem.Companion.UNDEFINED_ID
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ShopItemFragment : Fragment() {
     private var _binding: FragmentShopItemBinding? = null
@@ -121,10 +124,21 @@ class ShopItemFragment : Fragment() {
 
     private fun lunchAddMode() {
         binding.saveButton.setOnClickListener {
-            shopItemViewModel.addShopItem(
+            /*shopItemViewModel.addShopItem(
                 binding.nameEt.text?.toString(),
                 binding.countEt.text?.toString()
-            )
+            )*/
+            thread {
+                context?.contentResolver?.insert(
+                    Uri.parse("content://com.ilya.shopinglist/shop_items"),
+                    ContentValues().apply {
+                        put("id", 0)
+                        put("name", binding.nameEt.text?.toString())
+                        put("count", binding.countEt.text?.toString()?.toInt() ?: 0)
+                        put("enabled", true)
+                    }
+                )
+            }
         }
     }
 
